@@ -11,48 +11,17 @@ const SMM_API_URL = 'https://smmstone.com/api/v2';
 const mainMenu = {
   reply_markup: {
     inline_keyboard: [
-      [{ text: '📸 Instagram', callback_data: 'cat_instagram' }],
-      [{ text: '🎵 TikTok', callback_data: 'cat_tiktok' }],
-      [{ text: '▶️ YouTube', callback_data: 'cat_youtube' }],
-      [{ text: '🐦 Twitter/X', callback_data: 'cat_twitter' }],
       [{ text: '✈️ Telegram', callback_data: 'cat_telegram' }],
-      [{ text: '💰 Mi Carrito', callback_data: 'cart_view' }],
       [{ text: '❓ Ayuda', callback_data: 'help' }]
     ]
   }
 };
 
-// Servicios por categoría (selección popular)
+// Servicios por categoría (solo Telegram)
 const services = {
-  instagram: [
-    { id: 4744, name: '🇺🇸 Instagram Followers USA', min: 10, max: 50000, rate: 2.85 },
-    { id: 4745, name: '🇧🇷 Instagram Followers Brazil', min: 10, max: 100000, rate: 1.45 },
-    { id: 1920, name: '👍 Instagram Likes', min: 10, max: 100000, rate: 0.09 },
-    { id: 4742, name: '👁️ Instagram Views', min: 100, max: 10000000, rate: 0.02 },
-    { id: 1956, name: '💬 Instagram Comments', min: 1, max: 1000, rate: 5.00 }
-  ],
-  tiktok: [
-    { id: 4275, name: '🇺🇸 TikTok Followers USA', min: 10, max: 10000000, rate: 1.31 },
-    { id: 4274, name: '🇧🇷 TikTok Followers Brazil', min: 10, max: 10000000, rate: 1.27 },
-    { id: 4276, name: '❤️ TikTok Likes', min: 10, max: 1000000, rate: 0.24 },
-    { id: 4277, name: '👁️ TikTok Views', min: 100, max: 10000000, rate: 0.08 },
-    { id: 5424, name: '📺 TikTok Live Stream Views (15 min)', min: 10, max: 20000, rate: 1.43 }
-  ],
-  youtube: [
-    { id: 5500, name: '📺 YouTube Suscribers', min: 100, max: 10000, rate: 0.40 },
-    { id: 5566, name: '▶️ YouTube Views', min: 100, max: 100000, rate: 0.78 },
-    { id: 4076, name: '▶️ YouTube Views (Lifetime)', min: 100, max: 2147483647, rate: 1.03 },
-    { id: 6513, name: '👍 YouTube Likes', min: 50, max: 500000, rate: 0.16 },
-    { id: 3211, name: '💬 YouTube Comments', min: 1, max: 10000, rate: 6.72 }
-  ],
-  twitter: [
-    { id: 4743, name: '🐦 Twitter Followers', min: 10, max: 50000, rate: 1.20 },
-    { id: 4280, name: '❤️ Twitter Likes', min: 10, max: 100000, rate: 0.18 },
-    { id: 4281, name: '🔁 Twitter Retweets', min: 10, max: 100000, rate: 0.25 }
-  ],
   telegram: [
-    { id: 4295, name: '👥 Telegram Channel Members', min: 100, max: 50000, rate: 0.45 },
-    { id: 4296, name: '👁️ Telegram Post Views', min: 100, max: 1000000, rate: 0.03 }
+    { id: 4296, name: '👁️ Telegram Post Views', min: 100, max: 1000000, rate: 0.03 },
+    { id: 4295, name: '👥 Telegram Channel Members', min: 100, max: 50000, rate: 0.45 }
   ]
 };
 
@@ -69,8 +38,8 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, 
     '👋 *¡Bienvenido al SMM Bot!*\n\n' +
-    'Compra seguidores, likes, views y más para tus redes sociales.\n\n' +
-    'Selecciona una categoría para comenzar:',
+    'Compra views y miembros para tus canales de Telegram.\n\n' +
+    'Selecciona un servicio:',
     { parse_mode: 'Markdown', ...mainMenu }
   );
 });
@@ -81,22 +50,14 @@ bot.on('callback_query', async (query) => {
   const data = query.data;
 
   try {
-    // Categorías
-    if (data === 'cat_instagram') {
-      showServices(chatId, 'instagram', '📸 *Instagram* - Selecciona un servicio:');
-    } else if (data === 'cat_tiktok') {
-      showServices(chatId, 'tiktok', '🎵 *TikTok* - Selecciona un servicio:');
-    } else if (data === 'cat_youtube') {
-      showServices(chatId, 'youtube', '▶️ *YouTube* - Selecciona un servicio:');
-    } else if (data === 'cat_twitter') {
-      showServices(chatId, 'twitter', '🐦 *Twitter/X* - Selecciona un servicio:');
-    } else if (data === 'cat_telegram') {
+    // Solo Telegram
+    if (data === 'cat_telegram') {
       showServices(chatId, 'telegram', '✈️ *Telegram* - Selecciona un servicio:');
     } else if (data === 'help') {
       showHelp(chatId);
     } else if (data === 'back_main') {
       bot.editMessageText(
-        '👋 *¡Bienvenido al SMM Bot!*\n\nSelecciona una categoría:',
+        '👋 *¡Bienvenido al SMM Bot!*\n\nSelecciona un servicio:',
         { chat_id: chatId, message_id: query.message.message_id, parse_mode: 'Markdown', ...mainMenu }
       );
     } else if (data.startsWith('service_')) {
